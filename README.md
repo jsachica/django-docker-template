@@ -24,11 +24,11 @@ Django project template with docker and PostgreSQL
 
 * #### Step 7:
   Open the docker-compose.dev.yml file.
-  
+
   Delete the command of the web service: `command: tail -f /dev/null`
-  
+
   Delete the following volume of the web service: `- ./webproject/:/home/website/src/`
-  
+
   Uncomment the following two named volumes (simply delete the '#' character):
   ````
   #      - media-files:/home/website/src/media/
@@ -41,10 +41,9 @@ Django project template with docker and PostgreSQL
 * #### Step 9:
   Bash into the container where the server is running: `docker exec -u root -it web-container bash`
 
-
 * #### Step 10:
   Collect static files: `python manage.py collectstatic`
-  
+
 ### These following steps will need to be redone once the project is set to use the postgres database:
 * #### Step 11:
   Run migrations: `python manage.py migrate`
