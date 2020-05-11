@@ -1,0 +1,51 @@
+version: "3.7"
+services:
+  db:
+    container_name: db-container
+    image: postgres:12.2
+    environment:
+      - POSTGRES_PASSWORD=postgres
+      - POSTGRES_DB=data
+    volumes:
+      - db-data:/var/lib/postgresql/data/
+    networks:
+      - backend
+  web:
+    container_name: web-container
+    build:
+      context: webproject/
+      dockerfile: Dockerfile
+    environment:
+      - DEBUG=1
+      - DATABASE_URL=postgres://postgres:postgres@db/data
+    volumes:
+      - media-files:/home/website/src/media/
+      - static-files:/home/website/src/static/
+    ports:
+      - 8000:8000
+    networks:
+      - backend
+    links:
+      - db
+    depends_on:
+      - db
+  pgadmin:
+    container_name: pgadmin-container
+    image: dpage/pgadmin4:4.21
+    environment:
+      - PGADMIN_DEFAULT_EMAIL=admin@gmail.com
+      - PGADMIN_DEFAULT_PASSWORD=admin
+    ports:
+      - 8080:80
+    networks:
+      - backend
+    links:
+      - db
+    depends_on:
+      - db
+volumes:
+  db-data:
+  media-files:
+  static-files:
+networks:
+  backend:
