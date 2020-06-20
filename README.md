@@ -5,7 +5,7 @@ Django project template with docker
 
 ### Initial Setup
 * #### Step 1:
-  Delete the folders `webproject-$dbname` that won't be used and only leave the one that will be used, rename it to 'webproject' and cd into it: `cd webproject`
+  Delete the folders `webproject-$dbname` that won't be used and only leave the one that will be used, rename it to `webproject` and cd into it: `cd webproject`
 
 * #### Step 2:
   Bring up the django service: `docker-compose -f docker-compose.dev.yml up -d --build django`
