@@ -23,7 +23,7 @@ services:
       - DEBUG=1
       - DATABASE_URL=mysql://root:root@db/data
     volumes:
-      - .:/home/website/src/
+      - .:/home/django/src/
     ports:
       - 8000:8000
     networks:
