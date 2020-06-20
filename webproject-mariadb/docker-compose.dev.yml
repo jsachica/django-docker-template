@@ -1,0 +1,49 @@
+version: "3.7"
+services:
+  db:
+    container_name: db-container
+    image: mariadb:10.3
+    environment:
+      - MYSQL_ROOT_PASSWORD=root
+      - MYSQL_DATABASE=data
+    command: ['mysqld', '--character-set-server=utf8mb4', '--collation-server=utf8mb4_unicode_ci']
+    volumes:
+      - db-data:/var/lib/mysql/
+    networks:
+      - backend
+  django:
+    container_name: django-container
+    build:
+      context: .
+      dockerfile: Dockerfile
+      args:
+        APP_USER: django
+    command: tail -f /dev/null
+    environment:
+      - DEBUG=1
+      - DATABASE_URL=mysql://root:root@db/data
+    volumes:
+      - .:/home/website/src/
+    ports:
+      - 8000:8000
+    networks:
+      - backend
+    links:
+      - db
+    depends_on:
+      - db
+  dbadmin:
+    container_name: dbadmin-container
+    image: phpmyadmin/phpmyadmin
+    ports:
+      - 8080:80
+    networks:
+      - backend
+    links:
+      - db
+    depends_on:
+      - db
+volumes:
+  db-data:
+networks:
+  backend:

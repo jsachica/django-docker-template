@@ -5,7 +5,7 @@ ENV PYTHONDONTWRITEBYTECODE 1
 ENV PYTHONUNBUFFERED 1
 
 # Create a group and user to run our app
-ARG APP_USER=website
+ARG APP_USER
 RUN useradd ${APP_USER}
 
 # Install packages needed to run your application (not build deps):
@@ -45,11 +45,12 @@ RUN set -ex \
 # Copy your application code to the container
 COPY --chown=${APP_USER} . .
 RUN dos2unix docker-entrypoint.sh
-RUN chmod a+x docker-entrypoint.sh
+RUN chmod u+x docker-entrypoint.sh
 
 # Change to a non-root user
 USER ${APP_USER}
 
-ENTRYPOINT ["./docker-entrypoint.sh"]
+# ENTRYPOINT ["./docker-entrypoint.sh"]
 
-CMD gunicorn ecommerce.wsgi:application --bind 0.0.0.0:8000
+CMD python manage.py runserver 0:8000
+# CMD gunicorn $projectName.wsgi:application --bind 0.0.0.0:8000

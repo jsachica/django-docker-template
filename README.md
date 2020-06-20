@@ -1,57 +1,50 @@
-# django-template-postgres
-Django project template with docker and PostgreSQL
+# django-template
+Django project template with docker
 
 ## Dev deployment
 
 ### Initial Setup
 * #### Step 1:
-  Bring up the web service: `docker-compose -f docker-compose.dev.yml up -d --build web`
+  Delete the folders 'webproject-$dbname' that won't be used and only leave the one that will be used, rename it to 'webproject' and cd into it: `cd webproject`
 
 * #### Step 2:
-  Bash into the container where the server is running: `docker exec -u root -it web-container bash`
+  Bring up the django service: `docker-compose -f docker-compose.dev.yml up -d --build django`
 
 * #### Step 3:
-  Create a new django project in the src/ folder and give it a name $projectName: `cd .. && django-admin startproject $projectName src`
+  Bash into the container where the server is running: `docker exec -u root -it django-container bash`
 
 * #### Step 4:
-  Exit the container: `exit`
+  Create a new django project in the src/ folder and give it a name $projectName: `cd .. && django-admin startproject $projectName src`
 
 * #### Step 5:
-  Bring down the service: `docker-compose -f docker-compose.dev.yml down`
+  Exit the container: `exit`
 
 * #### Step 6:
-  Replace the project name in the CMD of the Dockerfile: `CMD gunicorn $projectName.wsgi:application --bind 0.0.0.0:8000`
+  Bring down the service: `docker-compose -f docker-compose.dev.yml down`
 
 * #### Step 7:
-  Open the docker-compose.dev.yml file.
-
-  Delete the command of the web service: `command: tail -f /dev/null`
-
-  Delete the following volume of the web service: `- ./webproject/:/home/website/src/`
-
-  Uncomment the following two named volumes (simply delete the '#' character):
-  ````
-  #      - media-files:/home/website/src/media/
-  #      - static-files:/home/website/src/static/
-  ````
+  Replace the project name in the CMD of the Dockerfile: `CMD gunicorn $projectName.wsgi:application --bind 0.0.0.0:8000`
 
 * #### Step 8:
-  Bring all the services back up again: `docker-compose -f docker-compose.dev.yml up -d --build`
+  Open the docker-compose.dev.yml file and comment the command of the django service (add the '#' characted): `# command: tail -f /dev/null`
 
 * #### Step 9:
-  Bash into the container where the server is running: `docker exec -u root -it web-container bash`
+  Bring all the services back up again: `docker-compose -f docker-compose.dev.yml up -d --build`
 
 * #### Step 10:
+  Bash into the container where the server is running: `docker exec -u root -it django-container bash`
+
+### These following steps:
+* #### Step 11:
   Collect static files: `python manage.py collectstatic`
 
-### These following steps will need to be redone once the project is set to use the postgres database:
-* #### Step 11:
+* #### Step 12:
   Run migrations: `python manage.py migrate`
 
-* #### Step 12:
+* #### Step 13:
   Crear a superuser to access the admin panel: `python manage.py createsuperuser`. Enter all the data required for the user.
 
-* #### Step 13:
+* #### Step 14:
   Exit the container: `exit`
 
 
