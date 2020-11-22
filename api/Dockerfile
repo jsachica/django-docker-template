@@ -14,7 +14,6 @@ RUN useradd ${APP_USER}
 RUN set -ex \
     && RUN_DEPS=" \
         postgresql-client \
-        dos2unix \
     " \
     && seq 1 8 | xargs -I{} mkdir -p /usr/share/man/man{} \
     && apt-get update \
@@ -44,7 +43,6 @@ RUN set -ex \
 
 # Copy your application code to the container
 COPY --chown=${APP_USER} . .
-RUN dos2unix docker-entrypoint.sh
 RUN chmod u+x docker-entrypoint.sh
 
 # Change to a non-root user
