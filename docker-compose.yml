@@ -25,6 +25,8 @@ services:
       EMAIL_URL: 'console:'
     volumes:
       - ./api/:/home/api/src/
+      - staticfiles:/home/api/src/staticfiles
+      - mediafiles:/home/api/src/mediafiles
     networks:
       - db-network
       - api-network
@@ -37,6 +39,9 @@ services:
     build:
       context: ./proxy/
       dockerfile: Dockerfile
+    volumes:
+      - staticfiles:/srv/staticfiles
+      - mediafiles:/srv/mediafiles
     ports:
       - 80:8000
     networks:
@@ -61,6 +66,8 @@ services:
       - db
 volumes:
   db-data:
+  staticfiles:
+  mediafiles:
 networks:
   db-network:
   api-network:
