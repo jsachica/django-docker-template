@@ -9,30 +9,42 @@ services:
     volumes:
       - db-data:/var/lib/postgresql/data/
     networks:
-      - backend
-  django:
-    container_name: django-container
+      - db-network
+  api:
+    container_name: api-container
     build:
       context: ./api/
       dockerfile: Dockerfile
       args:
-        APP_USER: django
+        APP_USER: api
     command: gunicorn api.wsgi:application --bind 0.0.0.0:8000
     environment:
       DEBUG: 1
-      SECRET_KEY: 'k99hm7re(68t0!@g&c!$eq!hlut8+gpm%$n%ath&874%j+o_2z'
+      SECRET_KEY: 'some_secret_random_key'
       DATABASE_URL: 'postgres://postgres:postgres@db/data'
       EMAIL_URL: 'console:'
     volumes:
-      - ./api/:/home/django/src/
-    ports:
-      - 8000:8000
+      - ./api/:/home/api/src/
     networks:
-      - backend
+      - db-network
+      - api-network
     links:
       - db
     depends_on:
       - db
+  proxy:
+    container_name: proxy-container
+    build:
+      context: ./proxy/
+      dockerfile: Dockerfile
+    ports:
+      - 80:8000
+    networks:
+      - api-network
+    links:
+      - api
+    depends_on:
+      - api
   dbadmin:
     container_name: dbadmin-container
     image: dpage/pgadmin4:4.21
@@ -42,7 +54,7 @@ services:
     ports:
       - 8080:80
     networks:
-      - backend
+      - db-network
     links:
       - db
     depends_on:
@@ -50,4 +62,5 @@ services:
 volumes:
   db-data:
 networks:
-  backend:
+  db-network:
+  api-network:
