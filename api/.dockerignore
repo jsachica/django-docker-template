@@ -1,2 +1,7 @@
 # Docker
 .dockerignore
+.gitignore
+
+# Django
+staticfiles/
+mediafiles/
