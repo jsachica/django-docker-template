@@ -1,7 +1,7 @@
 version: "3.7"
 services:
   db:
-    container_name: db
+    container_name: ct-db
     image: postgres:12.2
     command: ["postgres", "-c", "log_statement=all"]
     environment:
@@ -12,7 +12,7 @@ services:
     networks:
       - db-network
   dbadmin:
-    container_name: dbadmin
+    container_name: ct-dbadmin
     image: dpage/pgadmin4:4.21
     environment:
       - PGADMIN_DEFAULT_EMAIL=admin@gmail.com
@@ -26,22 +26,16 @@ services:
     depends_on:
       - db
   api:
-    container_name: api
+    container_name: ct-api
     build:
       context: .
       dockerfile: api/Dockerfile
       args:
         APP_USER: api
+    env_file: api/.env
     command: tail -f /dev/null
-    environment:
-      DEBUG: 1
-      SECRET_KEY: 'some_secret_random_key'
-      DATABASE_URL: 'postgres://postgres:postgres@db/data'
-      EMAIL_URL: 'console:'
     volumes:
       - .:/home/api/src/
-      - staticfiles:/home/api/src/api/staticfiles
-      - mediafiles:/home/api/src/api/mediafiles
     networks:
       - db-network
       - api-network
@@ -50,25 +44,21 @@ services:
     depends_on:
       - db
   proxy:
-    container_name: proxy
+    container_name: ct-proxy
     build:
       context: ./proxy/
       dockerfile: Dockerfile
     volumes:
-      - staticfiles:/srv/staticfiles
-      - mediafiles:/srv/mediafiles
+      - ./api/staticfiles:/srv/staticfiles
+      - ./api/mediafiles:/srv/mediafiles
     ports:
       - 8100:80
     networks:
       - api-network
     links:
       - api
-    depends_on:
-      - api
 volumes:
   db-data:
-  staticfiles:
-  mediafiles:
 networks:
   db-network:
   api-network:
