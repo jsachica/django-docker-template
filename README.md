@@ -7,9 +7,8 @@ Django project template with docker
 * #### Step 1:
   Bring all the services up: `docker-compose up -d --build`
 
-### These following steps are optional:
 * #### Step 2:
-  Bash into the container where the server is running: `docker exec -u root -it api-container bash`
+  Bash into the container where the server is running: `docker exec -it ct-api bash`
 
 * #### Step 3:
   Collect static files: `python manage.py collectstatic`
