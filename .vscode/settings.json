@@ -1,5 +1,9 @@
 {
     "python.pythonPath": "/usr/local/bin/python",
+    "python.languageServer": "Pylance",
+    "python.analysis.extraPaths": [
+        "${workspaceFolder}/api/"
+    ],
     "terminal.integrated.shell.linux": "/bin/bash",
     "files.eol": "\n",
     "files.insertFinalNewline": true,
