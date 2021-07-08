@@ -18,7 +18,7 @@ To access the built-in django admin panel do the following:
 * Crear a superuser to access the admin panel: `python manage.py createsuperuser`. Enter all the data required for
   the user.
 * Exit the container: `exit`
-* Go to `http://localhost:9292/admin` and login with the user you just created
+* Go to `http://localhost:8000/admin` and login with the user you just created
 
 ## Inspecting the database
 
