@@ -1,8 +1,8 @@
 version: "3.7"
 services:
   db:
-    container_name: ct-db
-    image: postgres:12.2
+    container_name: ddt-db
+    image: postgres:12.6
     command: ["postgres", "-c", "log_statement=all"]
     environment:
       - POSTGRES_PASSWORD=postgres
@@ -11,14 +11,15 @@ services:
       - db-data:/var/lib/postgresql/data/
     networks:
       - db-network
-  dbadmin:
-    container_name: ct-dbadmin
-    image: dpage/pgadmin4:4.21
-    environment:
-      - PGADMIN_DEFAULT_EMAIL=admin@gmail.com
-      - PGADMIN_DEFAULT_PASSWORD=admin
     ports:
-      - 8181:80
+      - 5432:5432
+  db-client:
+    container_name: template-db-client
+    image: sosedoff/pgweb:0.11.8
+    environment:
+      - DATABASE_URL=postgres://postgres:postgres@db:5432/data?sslmode=disable
+    ports:
+      - 8080:8081
     networks:
       - db-network
     links:
@@ -26,39 +27,37 @@ services:
     depends_on:
       - db
   api:
-    container_name: ct-api
+    container_name: ddt-api
+    image: ddt-api-image
     build:
-      context: .
-      dockerfile: api/Dockerfile
-      args:
-        APP_USER: api
+      context: ./api
     env_file: api/.env
-    command: tail -f /dev/null
     volumes:
-      - .:/home/api/src/
+      - ./api/staticfiles:/home/django/src/staticfiles
+      - ./api/mediafiles:/home/django/src/mediafiles
     networks:
       - db-network
-      - api-network
+      - proxy-network
     links:
       - db
     depends_on:
       - db
   proxy:
-    container_name: ct-proxy
+    container_name: ddt-proxy
+    image: ddt-proxy-image
     build:
-      context: ./proxy/
-      dockerfile: Dockerfile
+      context: ./proxy
     volumes:
       - ./api/staticfiles:/srv/staticfiles
       - ./api/mediafiles:/srv/mediafiles
     ports:
-      - 8100:80
+      - 8000:80
     networks:
-      - api-network
+      - proxy-network
     links:
       - api
 volumes:
   db-data:
 networks:
   db-network:
-  api-network:
+  proxy-network:

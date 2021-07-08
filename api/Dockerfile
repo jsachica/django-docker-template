@@ -1,4 +1,4 @@
-FROM python:3.7.7-slim
+FROM python:3.8.11-slim
 
 # set environment variables
 ENV PYTHONDONTWRITEBYTECODE 1
@@ -10,8 +10,6 @@ ENV PYTHONUNBUFFERED 1
 RUN set -ex \
     && RUN_DEPS=" \
         postgresql-client \
-        ssh-client \
-        git \
     " \
     && seq 1 8 | xargs -I{} mkdir -p /usr/share/man/man{} \
     && apt-get update \
@@ -19,7 +17,7 @@ RUN set -ex \
     && rm -rf /var/lib/apt/lists/*
 
 # Install build deps, then run `pip install`, then remove unneeded build deps all in a single step.
-COPY api/requirements.txt requirements.txt
+COPY requirements.txt requirements.txt
 
 RUN set -ex \
     && BUILD_DEPS=" \
@@ -34,15 +32,21 @@ RUN set -ex \
     && apt-get purge -y --auto-remove -o APT::AutoRemove::RecommendsImportant=false $BUILD_DEPS \
     && rm -rf /var/lib/apt/lists/*
 
-# Change to a non-root user
-ARG APP_USER
+# Create non-root user
+ARG APP_USER=django
 RUN useradd -ms /bin/bash ${APP_USER}
+WORKDIR /home/${APP_USER}/src
+
+# Copy source code
+COPY docker-entrypoint.sh .
+RUN chmod +x docker-entrypoint.sh
+COPY manage.py .
+COPY api api
+COPY static static
+
+# Change to non-root user
 USER ${APP_USER}
 
-# Copy your application code to the container
-WORKDIR /home/${APP_USER}/src
-COPY --chown=${APP_USER} . .
-WORKDIR /home/${APP_USER}/src/api
-RUN chmod u+x docker-entrypoint.sh
+ENTRYPOINT ["sh","./docker-entrypoint.sh"]
 
-ENTRYPOINT ["./docker-entrypoint.sh"]
+CMD ["gunicorn", "--workers", "3", "--bind", "0.0.0.0:8000", "api.wsgi:application"]

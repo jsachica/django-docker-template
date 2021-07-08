@@ -1,6 +1,11 @@
-Django==3.2.4
-dj-database-url==0.5.0
-dj-email-url==1.0.2
-djangorestframework==3.12.4
-psycopg2==2.8.6
+# Django
+Django==3.2.5
+dj-database-url==0.5.0  # 12 factor app library for reading database connection data from config
+dj-email-url==1.0.2  # 12 factor app library for reading email connection data from config
+djangorestframework==3.12.4  # REST API stuff
+
+# PostgreSQL
+psycopg2==2.9.1
+
+# Gunicorn
 gunicorn==20.1.0
