@@ -1,5 +1,5 @@
 # Django
-Django==3.2.5
+Django==3.2.15
 dj-database-url==0.5.0  # 12 factor app library for reading database connection data from config
 dj-email-url==1.0.2  # 12 factor app library for reading email connection data from config
 djangorestframework==3.12.4  # REST API stuff
